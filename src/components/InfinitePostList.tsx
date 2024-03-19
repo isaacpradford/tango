@@ -15,12 +15,12 @@ type post = {
 type InfinitePostListProps = {
     isLoading: boolean;
     isError: boolean;
-    hasMore: boolean;
+    hasMore: boolean | undefined;
     fetchNewPosts: () => Promise<unknown>;
     posts?: post[];
 }
 
-export function InfinitePostList({ posts, isError, isLoading, fetchNewPosts, hasMore }: InfinitePostListProps ) {
+export function InfinitePostList({ posts, isError, isLoading, fetchNewPosts, hasMore = false }: InfinitePostListProps ) {
     if (isLoading) return <h1>Loading - </h1>
     if (isError) return <h1>Error...</h1>
 
