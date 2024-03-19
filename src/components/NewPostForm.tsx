@@ -22,7 +22,6 @@ function Form() {
     }, []);
 
     const session = useSession()
-    if (session.status !== "authenticated") return;
 
     useLayoutEffect(() => {
         updateTextAreaSize(textAreaRef.current);
@@ -36,6 +35,9 @@ function Form() {
         e.preventDefault();
         createPost.mutate({ content: inputValue});
     }
+
+
+    if (session.status !== "authenticated") return;
 
     return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2 border-b px-4 py-2">
