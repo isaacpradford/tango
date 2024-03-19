@@ -76,7 +76,7 @@ function FavoriteButton() {
     if (session.status !== "authenticated") {
         return (
             <div className="mb-1 mt-1 flex items-center gap-3 self-start text-gray-500">
-                <FavoriteIcon />
+                {/* <FavoriteIcon /> */}
             </div>
         )
     }
