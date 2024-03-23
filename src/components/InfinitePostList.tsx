@@ -2,6 +2,9 @@ import InfiniteScroll from "react-infinite-scroll-component"
 import { ProfileImage } from "./ProfileImage";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { VscHeart, VscHeartFilled } from "react-icons/vsc"
+import { IconHoverEffect } from "./IconHoverEffect";
+import { api } from "~/utils/api";
 
 type post = {
     id: string;
@@ -52,6 +55,54 @@ function PostCard({id, user, content, createdAt, likeCount, likedByMe} : post) {
         dateStyle:"short"
     })
 
+    const trpcUtils = api.useUtils();
+    const toggleLike = api.post.toggleLike.useMutation({
+      onSuccess: ({ addedLike }) => {
+        const updateData: Parameters<
+          typeof trpcUtils.post.infiniteFeed.setInfiniteData
+        >[1] = (oldData) => {
+          if (oldData == null) return;
+  
+          const countModifier = addedLike ? 1 : -1;
+  
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => {
+              return {
+                ...page,
+                posts: page.posts.map((post) => {
+                  if (post.id === id) {
+                    return {
+                      ...post,
+                      likeCount: post.likeCount + countModifier,
+                      likedByMe: addedLike,
+                    };
+                  }
+  
+                  return post;
+                }),
+              };
+            }),
+          };
+        };
+  
+        trpcUtils.post.infiniteFeed.setInfiniteData({}, updateData);
+        // trpcUtils.tweet.infiniteFeed.setInfiniteData(
+        //   { onlyFollowing: true },
+        //   updateData
+        // );
+        // trpcUtils.tweet.infiniteProfileFeed.setInfiniteData(
+        //   { userId: user.id },
+        //   updateData
+        // );
+      },
+    });
+  
+    function HandleToggleLike() {
+      toggleLike.mutate({ id });
+    }
+
+
     return (
         <li className="flex gap-4 border-b px-4 py-4">
             <Link href={`/profile/${user.id}`}>
@@ -65,19 +116,47 @@ function PostCard({id, user, content, createdAt, likeCount, likedByMe} : post) {
                 </div>
 
                 <p className="whitespace-pre-wrap">{content}</p>
+                <FavoriteButton onclick={HandleToggleLike} isLoading={toggleLike.isLoading} likedByMe={likedByMe} likeCount={likeCount}/>
             </div>
         </li>
     )
 }
 
-function FavoriteButton() {
+type FavoriteButtonProps = {
+    onclick: () => void;
+    isLoading: boolean;
+    likedByMe: boolean;
+    likeCount: number;
+}
+
+function FavoriteButton({ isLoading, onclick, likedByMe, likeCount }: FavoriteButtonProps) {
     const session = useSession();
+    const FavoriteIcon = likedByMe ? VscHeartFilled : VscHeart;
 
     if (session.status !== "authenticated") {
         return (
             <div className="mb-1 mt-1 flex items-center gap-3 self-start text-gray-500">
-                {/* <FavoriteIcon /> */}
+                <FavoriteIcon />
+                <span>{likeCount}</span>
             </div>
         )
     }
+    return (
+        <button disabled={isLoading}
+                onClick={onclick}
+            className={`group flex items-center gap-1 self-start transition-colors duration-100 -ml-2 ${
+            likedByMe 
+            ? "text-red-500"
+            : "text-red-500 hover:text-red-500 focus-visible:text-red-500"} `}>
+                <IconHoverEffect red>
+                    <FavoriteIcon className={`transition-colors duration-200 ${
+                        likedByMe
+                        ? "fill-red-500"
+                        : "fill-gray-500 group-hover:fill-red-500 group-focus-visible:fill-red-500" 
+                    }`} />
+                </IconHoverEffect>
+
+            <span className="text-gray-500">{likeCount}</span>
+        </button>
+    )
 }
