@@ -87,14 +87,9 @@ function PostCard({id, user, content, createdAt, likeCount, likedByMe} : post) {
         };
   
         trpcUtils.post.infiniteFeed.setInfiniteData({}, updateData);
-        // trpcUtils.tweet.infiniteFeed.setInfiniteData(
-        //   { onlyFollowing: true },
-        //   updateData
-        // );
-        // trpcUtils.tweet.infiniteProfileFeed.setInfiniteData(
-        //   { userId: user.id },
-        //   updateData
-        // );
+        trpcUtils.post.infiniteFeed.setInfiniteData({ onlyFollowing: true }, updateData);
+        
+        trpcUtils.post.profileFeed.setInfiniteData({ userId: user.id }, updateData);
       },
     });
   

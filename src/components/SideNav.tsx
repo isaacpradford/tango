@@ -20,7 +20,7 @@ export function SideNav() {
             </li>
             { user != null && (
                 <li>
-                    <Link href={`/profile /${user.id}`}>
+                    <Link href={`/profile/${user.id}`}>
                         <IconHoverEffect>
                             <span className="flex items-center gap-4"><VscAccount className="h-8 w-8"/>
                                 <span className="hidden text-lg md:inline">Profile</span>
