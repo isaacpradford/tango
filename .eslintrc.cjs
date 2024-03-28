@@ -16,7 +16,9 @@ const config = {
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
 
+    //Removing annoying linter rule about preferring ?? over ||
     "@typescript-eslint/prefer-nullish-coalescing": "off",
+    "@typescript-eslint/prefer-optional-chain": "off",
     //remove these four if this gets fixed
     "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unsafe-argument" : "off",
