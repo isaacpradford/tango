@@ -20,11 +20,13 @@ export const profileRouter = createTRPCRouter({
       input: { id }, ctx }) => {
         const currentUserId = ctx.session?.user.id;
 
+        // This is where you pick what information is selected for the profile page
         const profile = await ctx.db.user.findUnique({ 
               where: { id }, 
               select: 
               { name: true, 
                 image: true, 
+                biography: true,
                 _count: { select: { followers: true, follows: true, posts: true, }},
                 followers: 
                   currentUserId == null 
@@ -37,6 +39,7 @@ export const profileRouter = createTRPCRouter({
         return {
             name: profile.name,
             image: profile.image,
+            biography: profile.biography,
             followersCount: profile._count.followers,
             followsCount: profile._count.follows,
             postsCount: profile._count.posts,
@@ -72,10 +75,43 @@ export const profileRouter = createTRPCRouter({
       }
 
       // Revalidate page of person being followed and the person following
-      void ctx.revalidateSSG?.(`/profiles/${userId}`);
-      void ctx.revalidateSSG?.(`/profiles/${currentUserId}`);
+      void ctx.revalidateSSG?.(`/profile/${userId}`);
+      void ctx.revalidateSSG?.(`/profile/${currentUserId}`);
 
 
       return { addedFollow }
-    })
+    }),
+
+
+    // Update profile pic
+    updateProfilePic: protectedProcedure
+      .input(z.object({ image: z.string() }))
+      .mutation(async ({ input: { image }, ctx }) => {
+        const userId = ctx.session.user.id;
+
+        await ctx.db.user.update({
+          where: {id: userId },
+          data: { image }
+        });
+
+        void ctx.revalidateSSG?.(`/profile/${userId}`)
+
+        return { success: true };
+      }),
+
+    // Add Biography to profile
+    addBiography: protectedProcedure
+      .input(z.object({ biography: z.string() }))
+      .mutation(async ({ input: { biography }, ctx}) => {
+        const userId = ctx.session.user.id;
+
+        const postBiography = await ctx.db.user.update({
+          where: { id: userId },
+          data: { biography },
+        })
+
+        void ctx.revalidateSSG?.(`/profile/${userId}`)
+
+        return postBiography;
+      })
 });

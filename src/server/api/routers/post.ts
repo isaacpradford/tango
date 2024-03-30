@@ -65,7 +65,6 @@ export const postRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ content: z.string() }))
     .mutation(async ({input: { content }, ctx }) => {
-      console.log(content);
       const post = await ctx.db.post.create({
         data: { content, userId: ctx.session.user.id },
       });

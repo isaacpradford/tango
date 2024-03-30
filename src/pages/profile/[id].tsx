@@ -10,6 +10,9 @@ import { ProfileImage } from "~/components/ProfileImage";
 import { InfinitePostList } from "~/components/InfinitePostList";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/Button";
+import BiographyEditor from "~/components/BiographyEditor";
+import { useState } from "react";
+import { NewPostForm } from "~/components/NewPostForm";
 
 
 const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = 
@@ -17,9 +20,24 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> =
     id
 }) => 
 {
+    
+    // Set the bio state to be updatable with a button
+    const [isEditingBio, setIsEditingBio] = useState(false);
+    const [isUpdateBioButtonVisible, setIsUpdateBioButtonVisible] = useState(true);
+    const handleEditBio = () => {
+        setIsEditingBio(true);
+        setIsUpdateBioButtonVisible(false);
+    };
+
+    const handleSaveBio = () => {
+        setIsEditingBio(false);
+        setIsUpdateBioButtonVisible(true);
+    };
+
     // Get all the data of the profile
     const { data: profile }= api.profile.getById.useQuery({ id })
-
+    console.log(profile);
+    
     // Get users posts, set up infinite feed
     const posts = api.post.profileFeed.useInfiniteQuery({ userId: id }, {getNextPageParam: (lastPage) => lastPage.nextCursor})
     
@@ -40,6 +58,8 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> =
         }, 
     });
 
+    const session = useSession();
+
     // If the page doesn't exist, return an error
     if (profile == null) return <ErrorPage statusCode={404} />
 
@@ -48,32 +68,63 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> =
             <Head>
                 <title>{`Raft - ${profile.name}`}</title>
             </Head>
-            <header className="sticky top-0 z-10 flex items-center border-b bg-white px-4 py-2">
-                <Link href=".." className="mr-2">
-                    <IconHoverEffect>
-                        <VscArrowLeft className="h-6 w-6" />
-                    </IconHoverEffect>
-                </Link>
-                <ProfileImage src={profile.image} className="flex-shrink-0" />
-                <div className="ml-2 flex-grow">
-                    <h1 className="text-lg font-bold">{profile.name}</h1>
-                    <div className="text-gray-500">
-                        {profile.postsCount}{" "}{ getPlural(profile.postsCount, "Post", "Posts")}{" - "}
 
-                        {profile.followersCount}{" "}{ getPlural(profile.postsCount, "Follower", "Followers")}{" /    "}
-
-                        {profile.followsCount}{" "} Following
+            <header>
+                <div className="flex justify-between">
+                    <div>
+                        <Link href=".." className="max-h-6 max-w-6 ">
+                            <IconHoverEffect>
+                                <VscArrowLeft className="h-6 w-6" />
+                            </IconHoverEffect>
+                        </Link>
                     </div>
 
-                </div> 
-                <FollowButton 
-                    isFollowing={profile.isFollowing} 
-                    userId={id} 
-                    onClick={() => toggleFollow.mutate({ userId: id })} 
-                />
+                    <div className="mt-5 mr-5">
+                        <FollowButton
+                            isFollowing={profile.isFollowing} 
+                            userId={id} 
+                            onClick={() => toggleFollow.mutate({ userId: id })} 
+                        />
+                    </div>
+                </div>
+
+                <div className="profile sticky top-0 z-10 flex items-center border-b bg-white px-4 py-2">
+                    <ProfileImage src={profile.image} className="min-w-20 min-h-20 w-20 h-20"/>
+
+                    <div className="ml-10 flex-grow">
+                        <h1 className="text-lg font-bold">{profile.name}</h1>
+                        <div className="text-gray-500">
+                            {profile.postsCount}{" "}{ getPlural(profile.postsCount, "Post", "Posts")}{" - "}
+
+                            {profile.followersCount}{" "}{ getPlural(profile.postsCount, "Follower", "Followers")}{" /    "}
+
+                            {profile.followsCount}{" "}Following
+                        </div>
+
+                        <div className="border-2 p-4 m-5">
+                            {isEditingBio ? (
+                                <BiographyEditor currentBiography={profile.biography} userId={id} />
+                                    ) : (
+                                        <>
+                                            {profile.biography ? (
+                                                <p className="whitespace-pre-wrap ">{profile.biography}</p>
+                                            ) : (
+                                                <></>
+                                            )}
+                                        </>
+                                )}
+                        </div>
+                                {isUpdateBioButtonVisible  && session.data?.user.id === id && (
+                                    <Button small onClick={handleEditBio} className="ml-2 text-white hover:text-white focus:outline-none text-xs">
+                                        Update Bio
+                                    </Button>
+                                )}
+                    </div>  
+                </div>
             </header>
 
             <main>
+            <NewPostForm />
             <InfinitePostList 
                 posts = {posts.data?.pages.flatMap((page) => page.posts)}
                 isError = { posts.isError }

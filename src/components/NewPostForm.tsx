@@ -3,16 +3,7 @@ import { Button } from "./Button";
 import { ProfileImage } from "./ProfileImage";
 import { FormEvent, useCallback, useLayoutEffect, useRef, useState } from "react";
 import { api } from "~/utils/api";
-
-
-function updateTextAreaSize(textArea?: HTMLTextAreaElement) {
-    if (textArea == null) {
-        return;
-    } else {
-        textArea.style.height = "0",
-        textArea.style.height = `${textArea.scrollHeight}px`
-    }
-}
+import updateTextAreaSize from "./UpdateTextAreaSize";
 
 function Form() {
     const [inputValue, setInputValue] = useState("")
@@ -64,7 +55,7 @@ function Form() {
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        createPost.mutate({ content: inputValue});
+        createPost.mutate({ content: inputValue });
     }
 
 
