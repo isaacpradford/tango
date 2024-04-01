@@ -5,8 +5,9 @@ export default {
   content: ["./src/**/*.tsx"],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+      colors: {
+        'main-orange': '#E24E1B',
+        'orange-2': '#EA7148',
       },
     },
   },

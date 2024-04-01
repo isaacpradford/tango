@@ -24,7 +24,7 @@ type InfinitePostListProps = {
 }
 
 export function InfinitePostList({ posts, isError, isLoading, fetchNewPosts, hasMore = false }: InfinitePostListProps ) {
-    if (isLoading) return <h1>Loading - </h1>
+    if (isLoading) return <h1 className="text-center mt-28">- Loading - </h1>
     if (isError) return <h1>Error...</h1>
 
     if (posts == null || posts.length === 0) {
@@ -99,15 +99,17 @@ function PostCard({id, user, content, createdAt, likeCount, likedByMe} : post) {
 
 
     return (
-        <li className="flex gap-4 border-b px-4 py-4">
-            <Link href={`/profile/${user.id}`}>
+        <li className="flex gap-4 border-b">
+            <Link className="pt-2 pl-2" href={`/profile/${user.id}`}>
                 <ProfileImage src={user.image}/>
             </Link>
             <div className="flex flex-grow flex-col">
                 <div className="flex gap-1">
-                    <Link href={`/profile/${user.id}`} className="font-bold hover:underline focus-visible:underline outline-none">{user.name}</Link>
-                    <span className="text-gray-500">-</span>
-                    <span className="text-gray-500">{dateTimeFormatter.format(createdAt)}</span>
+                    <h1 className="font-bold pt-1">Display Name</h1> 
+                    <p className="pt-1">/</p>
+                    <Link href={`/profile/${user.id}`} className="text-gray-500 hover:underline focus-visible:underline outline-none pt-1">{user.name}</Link>
+                    <span className="text-gray-500 pt-1">-</span>
+                    <span className="text-gray-500 pt-1">{dateTimeFormatter.format(createdAt)}</span>
                 </div>
 
                 <p className="whitespace-pre-wrap">{content}</p>

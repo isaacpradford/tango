@@ -15,8 +15,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <Head>
-        <title>Tango</title>
-        <meta name="description" content="This is Tango, a text-based social media application. Welcome!"/>
+        <title>Raft</title>
+        <meta name="description" content="This is Raft, a text-based social media application. Welcome!"/>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

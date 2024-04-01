@@ -87,12 +87,16 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> =
                         />
                     </div>
                 </div>
+                
 
-                <div className="profile sticky top-0 z-10 flex items-center border-b bg-white px-4 py-2">
-                    <ProfileImage src={profile.image} className="min-w-20 min-h-20 w-20 h-20"/>
-
-                    <div className="ml-10 flex-grow">
-                        <h1 className="text-lg font-bold">{profile.name}</h1>
+                <div className="profile sticky top-0 z-10 flex items-center border-b bg-white px-4 py-2 ">
+                <ProfileImage src={profile.image} className="min-w-20 min-h-20 w-20 h-20 ml-5"/>
+                    <div className="ml-20 flex-grow">
+                        <span className="flex text-lg border-b">   
+                            <h1 className="font-bold mr-2">Display Name (once it is implemented) / </h1>
+                            <h1 className="text-gray-500">{profile.name}</h1>
+                        </span>
+                     
                         <div className="text-gray-500">
                             {profile.postsCount}{" "}{ getPlural(profile.postsCount, "Post", "Posts")}{" - "}
 
@@ -101,7 +105,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> =
                             {profile.followsCount}{" "}Following
                         </div>
 
-                        <div className="border-2 p-4 m-5">
+                        <div className="mt-10">
                             {isEditingBio ? (
                                 <BiographyEditor currentBiography={profile.biography} userId={id} />
                                     ) : (
@@ -115,7 +119,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> =
                                 )}
                         </div>
                                 {isUpdateBioButtonVisible  && session.data?.user.id === id && (
-                                    <Button small onClick={handleEditBio} className="ml-2 text-white hover:text-white focus:outline-none text-xs">
+                                    <Button small onClick={handleEditBio} className="mt-5 text-white hover:text-white focus:outline-none text-xs">
                                         Update Bio
                                     </Button>
                                 )}

@@ -40,13 +40,13 @@ const BiographyEditor = ({ currentBiography, userId } : BiographyProps) => {
 
     return (
         <form onSubmit={handleSaveBiography} className="">
-            <div className="flex gap-4 min-w-fit px-4 py-2 ">
+            <div className="flex ml-1 mb-1">
                 <textarea
                     style={{ height: 0 }}
                     ref={inputRef}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    className="w-full overflow-hidden block p-2.5 focus:outline-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full overflow-hidden block p-2.5 focus:outline-none text-sm text-gray-900 bg-gray-50 rounded-lg focus:ring focus:ring-orange-2 focus:border-orange-2"
                 >
                 </textarea>
             </div>
