@@ -29,6 +29,8 @@ const SearchPage = () => {
 
     console.log(searchData);
 
+  // Right now, PostCard is using type Any which isn't great
+  // Also you can't like posts on the search page
   return (
     <div>
         <div className="mx-auto">
@@ -62,6 +64,7 @@ const SearchPage = () => {
                     ))
                 ) : selectedTab === "Posts" && searchData && searchData.length >= 1 ? (
                     <div>
+                        
                         {searchData.map((post: any) => (
                             <div key={post.id}>
                                 <PostCard

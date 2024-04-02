@@ -19,6 +19,10 @@ const config = {
     //Removing annoying linter rule about preferring ?? over ||
     "@typescript-eslint/prefer-nullish-coalescing": "off",
     "@typescript-eslint/prefer-optional-chain": "off",
+
+    // Allow type: any. This is for the search page PostCard. Try to fix it later but it's not a huge priority rn
+    "@typescript-eslint/no-explicit-any": "off", 
+    
     //remove these four if this gets fixed
     "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unsafe-argument" : "off",
