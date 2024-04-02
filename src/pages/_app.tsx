@@ -6,12 +6,17 @@ import { api } from "~/utils/api";
 
 import Head from "next/head";
 import { SideNav } from "~/components/SideNav";
+import { SearchBar } from "~/components/SearchBar"
 import "~/styles/globals.css";
+import { useRouter } from "next/router";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const router = useRouter();
+  const isSearchPage = router.pathname === "/search";
+
   return (
     <SessionProvider session={session}>
       <Head>
@@ -20,11 +25,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="container mx-auto flex items-start sm:pr-4">
+      <div className="container mx-auto flex items-start">
         <SideNav />
-        <div className="min-h-screen flex-grow border-x">
+        <div className="min-h-screen min-w-screen flex-grow border-x lg:max-w-screen-xl">
           <Component {...pageProps} />
         </div>
+
+        {!isSearchPage && (
+          <div className="lg:flex bg-zinc-100 hidden">
+            <SearchBar />
+          </div>
+        )}
       </div>
     </SessionProvider>
   );

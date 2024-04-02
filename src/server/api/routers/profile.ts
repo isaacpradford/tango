@@ -82,36 +82,35 @@ export const profileRouter = createTRPCRouter({
       return { addedFollow }
     }),
 
+  // Update profile pic
+  updateProfilePic: protectedProcedure
+    .input(z.object({ image: z.string() }))
+    .mutation(async ({ input: { image }, ctx }) => {
+      const userId = ctx.session.user.id;
 
-    // Update profile pic
-    updateProfilePic: protectedProcedure
-      .input(z.object({ image: z.string() }))
-      .mutation(async ({ input: { image }, ctx }) => {
-        const userId = ctx.session.user.id;
+      await ctx.db.user.update({
+        where: {id: userId },
+        data: { image }
+      });
 
-        await ctx.db.user.update({
-          where: {id: userId },
-          data: { image }
-        });
+      void ctx.revalidateSSG?.(`/profile/${userId}`)
 
-        void ctx.revalidateSSG?.(`/profile/${userId}`)
+      return { success: true };
+    }),
 
-        return { success: true };
-      }),
+  // Add Biography to profile
+  addBiography: protectedProcedure
+    .input(z.object({ biography: z.string() }))
+    .mutation(async ({ input: { biography }, ctx}) => {
+      const userId = ctx.session.user.id;
 
-    // Add Biography to profile
-    addBiography: protectedProcedure
-      .input(z.object({ biography: z.string() }))
-      .mutation(async ({ input: { biography }, ctx}) => {
-        const userId = ctx.session.user.id;
-
-        const postBiography = await ctx.db.user.update({
-          where: { id: userId },
-          data: { biography },
-        })
-
-        void ctx.revalidateSSG?.(`/profile/${userId}`)
-
-        return postBiography;
+      const postBiography = await ctx.db.user.update({
+        where: { id: userId },
+        data: { biography },
       })
+
+      void ctx.revalidateSSG?.(`/profile/${userId}`)
+
+      return postBiography;
+    })
 });

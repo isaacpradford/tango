@@ -1,7 +1,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { IconHoverEffect } from "./IconHoverEffect";
-import { VscAccount, VscHome, VscMail, VscSignIn, VscSignOut } from "react-icons/vsc";
+import { VscAccount, VscHome, VscMail, VscSearch, VscSignIn, VscSignOut } from "react-icons/vsc";
 
 export function SideNav() {
     const session = useSession();
@@ -42,9 +42,21 @@ export function SideNav() {
                 </li>
             )}
 
+            { user != null && (
+                <li>
+                    <Link href={`/search/`}>
+                        <IconHoverEffect>
+                            <span className="flex items-center gap-4"><VscSearch className="h-8 w-8"/>
+                                <span className="hidden text-lg md:inline">Search</span>
+                            </span>
+                        </IconHoverEffect>
+                    </Link>
+                </li>
+            )}
+
             {user == null ? (
                 <li>
-                    <button onClick={() => void signIn()}>
+                    <button onClick={() => {void signIn()}}>
                         <IconHoverEffect>
                             <span className="flex items-center gap-4"><VscSignIn className="h-8 w-8"/>
                                 <span className="hidden text-lg md:inline fill-green-700">Log In</span>

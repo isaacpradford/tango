@@ -20,7 +20,6 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> =
     id
 }) => 
 {
-    
     // Set the bio state to be updatable with a button
     const [isEditingBio, setIsEditingBio] = useState(false);
     const [isUpdateBioButtonVisible, setIsUpdateBioButtonVisible] = useState(true);
@@ -36,7 +35,6 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> =
 
     // Get all the data of the profile
     const { data: profile }= api.profile.getById.useQuery({ id })
-    console.log(profile);
     
     // Get users posts, set up infinite feed
     const posts = api.post.profileFeed.useInfiniteQuery({ userId: id }, {getNextPageParam: (lastPage) => lastPage.nextCursor})
