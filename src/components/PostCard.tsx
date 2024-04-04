@@ -6,16 +6,13 @@ import { VscHeart, VscHeartFilled } from "react-icons/vsc"
 import { IconHoverEffect } from "./IconHoverEffect";
 import { api } from "~/utils/api";
 
-// Import types
-// import { Post } from "./Types";
-
 export type Post = {
   id: string;
   content: string;
   createdAt: Date;
   likeCount: number;
   likedByMe: boolean;
-  user: { id: string; image: string | null; name: string | null };
+  user: { id: string; image: string | null; displayName: string | null; name: string | null };
 }
 
 
@@ -60,32 +57,31 @@ function PostCard({id, user, content, createdAt, likeCount, likedByMe} : Post) {
         trpcUtils.post.profileFeed.setInfiniteData({ userId: user.id }, updateData);
       },
     });
-  
+
     function HandleToggleLike() {
         toggleLike.mutate({ id });
     }
 
     return (
-        <li className="flex gap-4 border-b">
+        <li className="flex gap-4 border-b max-w-full ">
             <Link className="pt-2 pl-2" href={`/profile/${user.id}`}>
                 <ProfileImage src={user.image}/>
             </Link>
-            <div className="flex flex-grow flex-col">
+            <div className="flex flex-grow flex-col overflow-auto lg:text-base sm:text-sm">
                 <div className="flex gap-1">
-                    <h1 className="font-bold pt-1">Display Name</h1> 
+                    <h1 className="font-bold pt-1">{user.displayName}</h1> 
                     <p className="pt-1">/</p>
                     <Link href={`/profile/${user.id}`} className="text-gray-500 hover:underline focus-visible:underline outline-none pt-1">{user.name}</Link>
                     <span className="text-gray-500 pt-1">-</span>
-                    <span className="text-gray-500 pt-1">{dateTimeFormatter.format(createdAt)}</span>
+                    <span className="text-gray-500 pt-1 pr-10">{dateTimeFormatter.format(createdAt)}</span>
                 </div>
 
-                <p className="whitespace-pre-wrap">{content}</p>
+                <p className="whitespace-pre-wrap break-words sm:max-w-2xl">{content}</p>
                 <FavoriteButton onclick={HandleToggleLike} isLoading={toggleLike.isLoading} likedByMe={likedByMe} likeCount={likeCount}/>
             </div>
         </li>
     )
 }
-
 
 type FavoriteButtonProps = {
     onclick: () => void;
@@ -109,7 +105,7 @@ function FavoriteButton({ isLoading, onclick, likedByMe, likeCount }: FavoriteBu
     return (
         <button disabled={isLoading}
                 onClick={onclick}
-            className={`group flex items-center gap-1 self-start transition-colors duration-100 -ml-2 ${
+            className={`group mt-3 flex items-center gap-1 self-start transition-colors duration-100 ${
             likedByMe 
             ? "text-red-500"
             : "text-red-500 hover:text-red-500 focus-visible:text-red-500"} `}>

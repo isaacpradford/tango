@@ -20,13 +20,13 @@ export default function Home() {
   return (
     <>
     <header className="sticky top-0 z-10 border-b bg-white pt-2">
-      <h1 className="mb-2 px-4 text-lg font-bold">Home</h1>
+      <h1 className="mb-2 px-4 text-lg font-bold text-center">Home</h1>
       {session.status === "authenticated" && (
         <div className="flex">
           {tabs.map(tab => {
             return <button 
               key={tab} 
-              className={`flex-grow p-2 hover:bg-gray-200 focus-visible:bg-gray-200 
+              className={`flex-grow w-lg p-2 hover:bg-gray-200 focus-visible:bg-gray-200 
               ${tab === selectedTab 
               ? "border-b-4 border-orange-2 font-bold" 
               : ""}`} 

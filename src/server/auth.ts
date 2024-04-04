@@ -6,6 +6,7 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 
 import { env } from "~/env";
@@ -47,12 +48,27 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(db),  
   providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        name: {
+          label: "Name",
+          type: "text",
+          placeholder: "Enter your name",
+        }
+      },
+      async authorize(credentials, _req) {
+        const user = { id: "1", name: credentials?.name ?? "J Smith" };
+        return user;
+      },
+  }),
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
+   
     // GoogleProvider({
     //   clientId: process.env.GOOGLE_ID,
     //   clientSecret: process.env.GOOGLE_SECRET,
@@ -65,6 +81,7 @@ export const authOptions: NextAuthOptions = {
     //   }
     // }),
   ],
+  // secret: process.env.NEXTAUTH_SECRET,
   
 };
 

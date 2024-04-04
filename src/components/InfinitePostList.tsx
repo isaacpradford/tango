@@ -17,7 +17,7 @@ export type Post = {
     createdAt: Date;
     likeCount: number;
     likedByMe: boolean;
-    user: { id: string; image: string | null; name: string | null };
+    user: { id: string; image: string | null; displayName: string | null; name: string | null };
   }
   
 

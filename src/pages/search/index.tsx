@@ -27,13 +27,11 @@ const SearchPage = () => {
     ? api.search.searchUsers.useQuery({ query: encodedQuery })
     : api.search.searchPosts.useQuery({ query: encodedQuery });
 
-    console.log(searchData);
-
   // Right now, PostCard is using type Any which isn't great
   // Also you can't like posts on the search page
   return (
     <div>
-        <div className="mx-auto">
+        <div className="mx-auto  w-lg">
             <SearchBar />
         </div>
 
@@ -59,7 +57,7 @@ const SearchPage = () => {
                 {selectedTab === "Users" && searchData && searchData.length >= 1 ? (
                     searchData.map((user: User) => (
                     <div key={user.id}>
-                        <UserCard id={user.id} name={user.name} image={user.image} biography={user.biography} />
+                        <UserCard id={user.id} name={user.name} displayName={user.displayName} image={user.image} biography={user.biography} />
                     </div>
                     ))
                 ) : selectedTab === "Posts" && searchData && searchData.length >= 1 ? (

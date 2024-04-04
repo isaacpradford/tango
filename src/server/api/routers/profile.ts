@@ -27,6 +27,7 @@ export const profileRouter = createTRPCRouter({
               { name: true, 
                 image: true, 
                 biography: true,
+                displayName: true,
                 _count: { select: { followers: true, follows: true, posts: true, }},
                 followers: 
                   currentUserId == null 
@@ -40,6 +41,7 @@ export const profileRouter = createTRPCRouter({
             name: profile.name,
             image: profile.image,
             biography: profile.biography,
+            displayName: profile.displayName,
             followersCount: profile._count.followers,
             followsCount: profile._count.follows,
             postsCount: profile._count.posts,
@@ -97,6 +99,21 @@ export const profileRouter = createTRPCRouter({
 
       return { success: true };
     }),
+
+    updateDisplayName: protectedProcedure
+      .input(z.object({ displayName: z.string() }))
+      .mutation(async ({ input: { displayName }, ctx}) => {
+        const userId = ctx.session.user.id;
+
+        const postDisplayName = await ctx.db.user.update({
+          where: { id: userId },
+          data: { displayName },
+        })
+
+        void ctx.revalidateSSG?.(`/profile/${userId}`)
+
+        return postDisplayName;
+      }),
 
   // Add Biography to profile
   addBiography: protectedProcedure

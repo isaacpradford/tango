@@ -37,6 +37,6 @@
     "**/*.cjs",
     "**/*.js",
     ".next/types/**/*.ts"
-  ],
+, "src/server/wsServer.ts"  ],
   "exclude": ["node_modules"]
 }

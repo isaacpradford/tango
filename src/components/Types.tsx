@@ -4,7 +4,7 @@ export type Post = {
     createdAt: Date;
     likeCount: number;
     likedByMe: boolean;
-    user: { id: string; image: string | null; name: string | null };
+    user: { id: string; image: string | null; displayName: string | null; name: string | null };
 }
 
 export type InfinitePostListProps = {
@@ -20,4 +20,5 @@ export type User = {
     name?: string | null;
     image?: string | null;
     biography?: string | null;
+    displayName?: string | null;
 }

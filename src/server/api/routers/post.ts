@@ -125,7 +125,7 @@ async function getInfinitePosts({
           _count: {select: {likes: true }},
           likes: currentUserId == null ? false : { where: { userId: currentUserId }},
           user: {
-            select: {name: true, id: true, image: true }
+            select: {name: true, id: true, displayName: true, image: true }
           },
         },
       });

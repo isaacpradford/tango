@@ -2,7 +2,6 @@ import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { api } from '~/utils/api';
 import updateTextAreaSize from './UpdateTextAreaSize';
 import { useSession } from 'next-auth/react';
-import { ProfileImage } from './ProfileImage';
 import { Button } from './Button';
 
 type BiographyProps = {
@@ -31,7 +30,6 @@ const BiographyEditor = ({ currentBiography, userId } : BiographyProps) => {
     const addBio = api.profile.addBiography.useMutation();
     const handleSaveBiography = async (event: React.FormEvent<HTMLFormElement>) => {
         addBio.mutate({ biography: inputValue });
-        
     }
 
     if (session.data.user.id !== userId) {
