@@ -36,6 +36,7 @@ function Form() {
                     user: {
                         id: session.data.user.id,
                         name: session.data.user.name ?? null,
+                        displayName: session.data.user.displayName ?? null,
                         image: session.data.user.image ?? null,
                     },
                 };
