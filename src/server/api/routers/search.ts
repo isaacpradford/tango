@@ -9,7 +9,6 @@ import {
     protectedProcedure,
     publicProcedure,
   } from "~/server/api/trpc";
-  import { inferAsyncReturnType } from "@trpc/server";
 
 
   export const searchRouter = createTRPCRouter({ 

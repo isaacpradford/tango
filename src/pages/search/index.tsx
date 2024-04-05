@@ -72,6 +72,8 @@ const SearchPage = () => {
                                     createdAt={ new Date(post.createdAt) }
                                     likeCount={ post._count.likes } 
                                     likedByMe={ post.likedByMe }
+                                    repostedByMe={ post.repostedByMe }
+                                    repostCount={ post.repostCount }
                                 />
                             </div>
                         ))}
