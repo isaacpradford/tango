@@ -60,7 +60,6 @@ export const postRouter = createTRPCRouter({
     })
   }),
 
-
   // Procedure to create a post
   create: protectedProcedure
     .input(z.object({ content: z.string() }))
@@ -75,8 +74,17 @@ export const postRouter = createTRPCRouter({
       return post;
     }),
 
+  deletePost: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input: {id}, ctx }) => {
+      await ctx.db.post.delete({ where: {id} })
+      return { success: true };
+    }),
+
   // Toggle a like procedure
-  toggleLike: protectedProcedure.input( z.object({ id: z.string()})).mutation(async ({ input: {id}, ctx}) => {
+  toggleLike: protectedProcedure
+    .input( z.object({ id: z.string()}))
+    .mutation(async ({ input: {id}, ctx}) => {
     const data = { postId: id, userId: ctx.session.user.id };
 
     const existingLike = await ctx.db.like.findUnique({
@@ -90,7 +98,46 @@ export const postRouter = createTRPCRouter({
       await ctx.db.like.delete({where: { userId_postId: data }})
       return { addedLike: false}
     }
-  })
+  }),
+
+  // Toggle repost procedure
+  toggleRepost: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input: { id }, ctx}) => {
+      const data = { postId: id, userId: ctx.session.user.id };
+      
+      // Check if user already reposted current post
+      const existingRepost = await ctx.db.repost.findUnique({
+        where: {userId_postId: data }
+      })
+      
+      const originalPost = await ctx.db.post.findUnique({
+        where: { id },
+        include: { user: true }
+      })
+
+      if (existingRepost == null && originalPost) {
+        // Modify the content to include the information about the original post user
+        const repostedContent = `Reposted from ${originalPost.user.name}:\n \n${originalPost.content}`;
+
+        // Create the reposted post
+        const repostedPost = await ctx.db.post.create({
+            data: {
+                content: repostedContent,
+                userId: ctx.session.user.id,
+                // Optionally, copy any other fields you want from the original post
+            }
+        });
+
+        // Create a repost record
+        await ctx.db.repost.create({ data: { ...data, createdAt: new Date() } });
+        return { addedRepost: true, repostedPost };
+    } else {
+        // Delete the existing repost if it already exists
+        await ctx.db.repost.delete({ where: { userId_postId: data } });
+        return { addedRepost: false }
+    }
+  }),
 });
 
 async function getInfinitePosts({
@@ -105,7 +152,7 @@ async function getInfinitePosts({
   ctx: inferAsyncReturnType<typeof createTRPCContext>;
 }) {
 
-  // A cursor is a unique identifier telling where the findMany wants to start at
+      // A cursor is a unique identifier telling where the findMany wants to start at
       // By doing + 1, it will take the last post ID and give you the last 11 most recent posts
       // It will return ten of the posts, and then look at the 11th one's createdAt_Id, 
       // and every time you requery the data, query from there next
@@ -122,8 +169,16 @@ async function getInfinitePosts({
           id: true,
           content: true,
           createdAt: true,
-          _count: {select: {likes: true }},
+          _count: {select: {likes: true, reposts: true }},
           likes: currentUserId == null ? false : { where: { userId: currentUserId }},
+          reposts: {
+            select: {
+              id: true,
+              user: {
+                select: { name: true, displayName: true }
+              }
+            }
+          },
           user: {
             select: {name: true, id: true, displayName: true, image: true }
           },
@@ -146,10 +201,12 @@ async function getInfinitePosts({
           content: post.content,
           createdAt: post.createdAt,
           likeCount: post._count.likes,
+          repostCount: post._count.reposts,
           user: post.user,
           
           // Check if post has already been liked by current user so they can't like it twice
           likedByMe: post.likes?.length > 0,
+          repostedByMe: post.reposts?.length > 0,
         }
       }), nextCursor };
   }

@@ -4,6 +4,8 @@ export type Post = {
     createdAt: Date;
     likeCount: number;
     likedByMe: boolean;
+    repostCount: number;
+    repostedByMe: boolean;
     user: { id: string; image: string | null; displayName: string | null; name: string | null };
 }
 
@@ -13,6 +15,7 @@ export type InfinitePostListProps = {
     hasMore: boolean | undefined;
     fetchNewPosts: () => Promise<unknown>;
     posts?: Post[];
+    reposts?: Repost[];
 }
 
 export type User = {
@@ -21,4 +24,11 @@ export type User = {
     image?: string | null;
     biography?: string | null;
     displayName?: string | null;
+}
+
+export type Repost = {
+    id: string;
+    userId: string;
+    postId: string; 
+    createdAt: Date;
 }
