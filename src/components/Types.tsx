@@ -7,6 +7,7 @@ export type Post = {
     repostedByMe: boolean;
     repostCount: number;
     user: { id: string; image: string | null; displayName: string | null; name: string | null };
+    tags: Tag[];
 }
 
 export type InfinitePostListProps = {
@@ -31,4 +32,8 @@ export type Repost = {
     userId: string;
     postId: string; 
     createdAt: Date;
+}
+
+export type Tag = {
+    name: string;
 }

@@ -7,11 +7,12 @@ import { HiArrowsRightLeft } from "react-icons/hi2";
 import { HiTrash } from "react-icons/hi2";
 import { IconHoverEffect } from "./IconHoverEffect";
 import { api } from "~/utils/api";
-import { Post } from "./Types";
+import { Post, Tag } from "./Types";
 import { Button } from "./Button";
+import { useState } from "react";
 
 
-function PostCard({id, user, content, createdAt, likeCount, likedByMe, repostedByMe, repostCount} : Post) {
+function PostCard({id, user, content, createdAt, likeCount, likedByMe, repostedByMe, repostCount, tags: initialTags} : Post) {
     const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
         dateStyle:"short"
     })
@@ -91,7 +92,7 @@ function PostCard({id, user, content, createdAt, likeCount, likedByMe, repostedB
     })
 
     const toggleDelete = api.post.deletePost.useMutation();
-
+    const [tags, setTags] = useState<Tag[]>(initialTags ?? []);
 
     function HandleToggleLike() {
         toggleLike.mutate({ id });
@@ -104,6 +105,8 @@ function PostCard({id, user, content, createdAt, likeCount, likedByMe, repostedB
     function HandleToggleDelete() {
       toggleDelete.mutate({ id });
     }
+
+    const session = useSession();
 
     return (
         <li className="flex gap-4 border-b max-w-full ">
@@ -118,20 +121,33 @@ function PostCard({id, user, content, createdAt, likeCount, likedByMe, repostedB
                     <span className="text-gray-500 pt-1">-</span>
                     <span className="text-gray-500 pt-1 pr-10">{dateTimeFormatter.format(createdAt)}</span>
 
-                    <div className="flex ml-auto mr-2">
-                      <button onClick={HandleToggleDelete} className="">
-                        <HiTrash className="h-5 w-5" />
-                      </button>
-                    </div>
+                    {session.status === "authenticated" && session.data.user.id === user.id && (
+                        <div className="flex ml-auto mr-2">
+                            <button onClick={HandleToggleDelete} className="">
+                                <HiTrash className="h-5 w-5" />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <p className="whitespace-pre-wrap break-words sm:max-w-2xl ">{content}</p>
                 <span className="flex max-w-40 min-w-40 max-h-20 bg-gray-100 mb-2 mt-8 border rounded-xl ">
                   <FavoriteButton onclick={HandleToggleLike} isLoading={toggleLike.isLoading} likedByMe={likedByMe} likeCount={likeCount}/>
                   <RepostButton onclick={HandleToggleRepost} isLoading={toggleRepost.isLoading} repostedByMe={repostedByMe} repostCount={repostCount} />
-
                 </span>
 
+                {tags.length > 0 && (
+                    <div className="flex flex-wrap mt-2">
+                        <span className="text-gray-500 mr-2">Tags: </span>
+                        {tags.map((tag, index) => {
+                            return (
+                                <span key={index} className="bg-gray-200 text-gray-600 text-sm px-2 py-1 rounded-full mr-2 mb-2">
+                                    {tag.name}
+                                </span>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </li>
     )

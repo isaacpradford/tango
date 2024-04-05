@@ -21,9 +21,18 @@ model Post {
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   likes   Like[]
   reposts Repost[]
+  tags    Tag[]
 
   @@unique([createdAt, id])
   @@index([userId])
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  name  String @unique
+  posts Post[]
+
+  @@index([name])
 }
 
 model Repost {

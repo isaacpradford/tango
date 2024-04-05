@@ -74,6 +74,7 @@ const SearchPage = () => {
                                     likedByMe={ post.likedByMe }
                                     repostedByMe={ post.repostedByMe }
                                     repostCount={ post.repostCount }
+                                    tags={ post.tags }
                                 />
                             </div>
                         ))}

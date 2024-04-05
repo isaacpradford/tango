@@ -7,18 +7,10 @@ import { IconHoverEffect } from "./IconHoverEffect";
 import { api } from "~/utils/api";
 
 import PostCard from "./PostCard";
+import { Post } from "./Types";
 
 // Import necessary types
 import { InfinitePostListProps } from "./Types";
-
-export type Post = {
-    id: string;
-    content: string;
-    createdAt: Date;
-    likeCount: number;
-    likedByMe: boolean;
-    user: { id: string; image: string | null; displayName: string | null; name: string | null };
-  }
   
 
 export function InfinitePostList({ posts, isError, isLoading, fetchNewPosts, hasMore = false }: InfinitePostListProps ) {
@@ -30,7 +22,6 @@ export function InfinitePostList({ posts, isError, isLoading, fetchNewPosts, has
             <h2 className="my-4 text-center text-2xl text-gray-500">No posts available</h2>
         );
     }
-
 
     return (
         <ul>

@@ -50,7 +50,6 @@ export const postRouter = createTRPCRouter({
     })
   )
   .query(async ({ input: { limit = 10, userId, cursor }, ctx }) => {
-
     // Return posts of the person who's profile you are at
     return await getInfinitePosts({ 
       limit, 
@@ -62,17 +61,56 @@ export const postRouter = createTRPCRouter({
 
   // Procedure to create a post
   create: protectedProcedure
-    .input(z.object({ content: z.string() }))
-    .mutation(async ({input: { content }, ctx }) => {
+  .input(z.object({ content: z.string(), tags: z.array(z.string()).optional() }))
+  .mutation(async ({ input: { content, tags }, ctx }) => {
       const post = await ctx.db.post.create({
-        data: { content, userId: ctx.session.user.id },
+          data: {
+              content,
+              userId: ctx.session.user.id,
+          },
       });
 
-      // Whenever a user makes a post, revalidate their page 
-      void ctx.revalidateSSG?.(`/profiles/${ctx.session.user.id}`)
+      // Associate tags with the post
+      if (tags && tags.length > 0) {
+          // Map to store tag ids
+          const tagIds: string[] = [];
+
+          // Find or create the tags and associate them with the post
+          for (const tagName of tags) {
+              // Try to find the tag
+              let tag = await ctx.db.tag.findUnique({
+                  where: { name: tagName },
+              });
+
+              // If the tag doesn't exist, create it
+              if (!tag) {
+                  tag = await ctx.db.tag.create({
+                      data: {
+                          name: tagName,
+                      },
+                  });
+              }
+
+              // Store the tag id
+              tagIds.push(tag.id);
+          }
+
+          // Associate tags with the post
+          await ctx.db.post.update({
+              where: { id: post.id },
+              data: {
+                  tags: {
+                      connect: tagIds.map((id) => ({ id })),
+                  },
+              },
+          });
+      }
+
+      // Whenever a user makes a post, revalidate their page
+      void ctx.revalidateSSG?.(`/profiles/${ctx.session.user.id}`);
 
       return post;
-    }),
+  }),
 
   deletePost: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -182,6 +220,7 @@ async function getInfinitePosts({
           user: {
             select: {name: true, id: true, displayName: true, image: true }
           },
+          tags: true,
         },
       });
 
@@ -203,6 +242,7 @@ async function getInfinitePosts({
           likeCount: post._count.likes,
           repostCount: post._count.reposts,
           user: post.user,
+          tags: post.tags,
           
           // Check if post has already been liked by current user so they can't like it twice
           likedByMe: post.likes?.length > 0,
