@@ -32,7 +32,9 @@ function Form() {
                 const newCachePost = {
                     ...newPost,
                     likeCount: 0,
+                    repostCount: 0,
                     likedByMe: false,
+                    repostedByMe: false,
                     user: {
                         id: session.data.user.id,
                         name: session.data.user.name ?? null,

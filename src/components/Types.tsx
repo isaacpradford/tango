@@ -4,8 +4,6 @@ export type Post = {
     createdAt: Date;
     likeCount: number;
     likedByMe: boolean;
-    repostCount: number;
-    repostedByMe: boolean;
     user: { id: string; image: string | null; displayName: string | null; name: string | null };
 }
 
