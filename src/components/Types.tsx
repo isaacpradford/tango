@@ -5,6 +5,7 @@ export type Post = {
     likeCount: number;
     likedByMe: boolean;
     repostedByMe: boolean;
+    repostCount: number;
     user: { id: string; image: string | null; displayName: string | null; name: string | null };
 }
 
