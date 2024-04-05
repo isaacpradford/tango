@@ -15,14 +15,14 @@ const UpdateDisplayName = ({ currentName, userId }: DisplayNameProps ) => {
 
     const session = useSession();
 
-    if (session.status !== "authenticated") return;
-
     useEffect(() => {
         // Focus on the input element when the component mounts
         if (inputRef.current) {
             inputRef.current.focus();
         }
     }, []);
+
+    if (session.status !== "authenticated") return;
 
     const addDisplayName = api.profile.updateDisplayName.useMutation();
     const handleSaveDisplayName = async (event: React.FormEvent<HTMLFormElement>) => {
